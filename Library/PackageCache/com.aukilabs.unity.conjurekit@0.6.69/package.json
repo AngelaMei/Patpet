@@ -1,0 +1,35 @@
+{
+  "name": "com.aukilabs.unity.conjurekit",
+  "version": "0.6.69",
+  "displayName": "Auki Labs ConjureKit",
+  "description": "ConjureKit allows developers to create a shared AR experience quickly and conveniently.",
+  "unity": "2020.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "https://www.aukilabs.com",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.0.2"
+  },
+  "author": {
+    "name": "Auki Labs",
+    "email": "info@aukilabs.com",
+    "url": "https://www.aukilabs.com"
+  },
+  "files": [
+    "package.json.meta",
+    "Runtime",
+    "Runtime.meta",
+    "Samples~"
+  ],
+  "samples": [
+    {
+      "displayName": "Demo",
+      "description": "A demo project that showscases various functionality of the SDK",
+      "path": "Samples~/Demo"
+    },
+    {
+      "displayName": "ECSDemo",
+      "description": "A demo project that shows basic usage of ECS",
+      "path": "Samples~/ECSDemo"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+
+ŽFlowLimiterCalculatorinput_videointrinsics_inputFINISHED:output_video"throttled_input_video"throttled_intrinsics_inputj
+FINISHED
+äHandLandmarkTrackingGpuIMAGE:throttled_input_video%INTRINSICS:throttled_intrinsics_input"LANDMARKS:hand_landmarks"HANDEDNESS:handedness"PALM_DETECTIONS:palm_detections"2HAND_ROIS_FROM_LANDMARKS:hand_rects_from_landmarks">HAND_ROIS_FROM_PALM_DETECTIONS:hand_rects_from_palm_detections"HAND_COUNT:hand_count"TRANSLATION:multi_global_trans"LANDMARKS_3D:multi_landmarks_3d*!MODEL_COMPLEXITY:model_complexity*ENABLE:enable*NUM_HANDS:num_hands*MIN_CUTOFF:min_cutoff*	BETA:beta
+êHandRendererSubgraphIMAGE:throttled_input_videoDETECTIONS:palm_detectionsLANDMARKS:hand_landmarksHANDEDNESS:handedness,NORM_RECTS:0:hand_rects_from_palm_detections&NORM_RECTS:1:hand_rects_from_landmarks"IMAGE:output_videoRinput_videoRINTRINSICS:intrinsics_inputzoutput_videoz
+handednesszHAND_COUNT:hand_countzTRANSLATION:multi_global_transzLANDMARKS_3D:multi_landmarks_3d‚	num_hands‚model_complexity‚ENABLE:enable‚NUM_HANDS:num_hands‚MIN_CUTOFF:min_cutoff

@@ -1,0 +1,21 @@
+{
+    "name": "CustomStaticLighthouseSelectorDemo",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ecdedaa6c1cf94d1bb628d8eb041a4aa",
+        "GUID:83ceb5a932ea0a54da565ff0177080ad",
+        "GUID:a748bdfaa47114a4f8111bbadd4bdcf7",
+        "GUID:64b1234fa35044b55a45addfaedee658",
+        "GUID:a9420e37d7990b54abdef6688edbe313",
+        "GUID:92703082f92b41ba80f0d6912de66115"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,24 @@
+{
+  "name": "com.aukilabs.unity.integration.arfoundation",
+  "version": "0.6.35",
+  "displayName": "Auki Labs ARFoundation Integration",
+  "description": "This package handles integration between ConjureKit and ARFoundation.",
+  "unity": "2020.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "https://www.aukilabs.com",
+  "dependencies": {
+    "com.aukilabs.unity.manna": "0.6.34",
+    "com.unity.xr.arfoundation": "4.2.7"
+  },
+  "author": {
+    "name": "Auki Labs",
+    "email": "info@aukilabs.com",
+    "url": "https://www.aukilabs.com"
+  },
+  "files": [
+    "package.json.meta",
+    "Runtime",
+    "Runtime.meta",
+    "Samples~"
+  ]
+}

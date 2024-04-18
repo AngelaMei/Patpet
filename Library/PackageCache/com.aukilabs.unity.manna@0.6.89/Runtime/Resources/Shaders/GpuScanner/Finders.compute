@@ -1,0 +1,178 @@
+/***************************************\
+ *                                      *
+ *           QR Code Finder             *
+ *      by Dariusz "De JET" Zolna       *
+ *     Copyright (c) 2023 Auki Labs     *
+ *                                      *
+ \**************************************/
+
+#pragma kernel clear_buffers
+#pragma kernel scan_finders
+#pragma kernel merge_finders
+#pragma kernel sum_finder_centers
+#pragma kernel draw_finders
+#pragma kernel draw_finder_candidates
+
+#include "Drawing.cginc"
+#include "Structs.cginc"
+
+RWStructuredBuffer<finder> Finders;
+RWStructuredBuffer<finder> MergedFinders;
+
+#include "Drilling.cginc"
+
+[numthreads(2, 2, 2)]
+void clear_buffers(uint3 id : SV_DispatchThreadID)
+{
+    const uint index = id.x + id.y * 16 + id.z * 128;
+    if(index > 255) return;
+
+    Finders[index].count = 0;
+    Finders[index].cluster = 0;
+    Finders[index].center = float2(0, 0);
+    MergedFinders[index].count = 0;
+    MergedFinders[index].cluster = 0;
+    MergedFinders[index].center = float2(0, 0);
+}
+
+
+[numthreads(4, 4, 1)]
+void scan_finders(uint3 id : SV_DispatchThreadID)
+{
+    if(Edges[id.xy] < 0.5) return;
+    if(Edges[id.xy + int2(0, 1)] > 0.5) return;
+
+    float2 pos = id.xy + float2(0.5, 0.5);
+
+    const int2 edge_up_near = fast_drill_up(pos + int2(0, 1));
+    if(edge_up_near.x < 0 || (edge_up_near.y - id.y < 2)) return;
+
+    pos = lerp(pos, edge_up_near, 0.5);
+
+    const int2 edge_right_near = fast_drill_right(pos + int2(1, 0));
+    if(edge_right_near.x < 0 || (edge_right_near.x - pos.x < 2)) return;
+
+    const int2 edge_left_near = fast_drill_left(pos + int2(-1, 0));
+    if(edge_left_near.x < 0 || (pos.x - edge_left_near.x < 2)) return;
+
+    const float gray1 = Colors[pos].r;
+    const float gray2 = Colors[pos + (edge_right_near - pos) * 1.5].r;
+
+    const drill3 edges_right = color_drill_3(pos, float2(1, 0), gray1, gray2);
+    if(!edges_right.valid) return;
+    
+    const drill3 edges_left = color_drill_3(pos, float2(-1, 0), gray1, gray2);
+    if(!edges_left.valid) return;
+    
+    for(int i=0; i<3; i++)
+    {
+        const float dist1 = distance(edges_left.edges[i], pos);
+        const float dist2 = distance(edges_right.edges[i], pos);
+        if(abs(1 - dist1 / dist2) > 0.4 || dist1 < 3 || dist2 < 3) return;
+    }
+    
+    const drill3 edges_up = color_drill_3(pos, float2(0, 1), gray1, gray2);
+    if(!edges_up.valid) return;
+
+    const drill3 edges_down = color_drill_3(pos, float2(0, -1), gray1, gray2);
+    if(!edges_down.valid) return;
+
+    for(int i=0; i<3; i++)
+    {
+        const float dist1 = distance(edges_up.edges[i], pos);
+        const float dist2 = distance(edges_down.edges[i], pos);
+        if(abs(1 - dist1 / dist2) > 0.4 || dist1 < 3 || dist2 < 3) return;
+    }
+
+    const drill3 edges_right_up = color_drill_3(pos, float2(1, 1), gray1, gray2);
+    if(!edges_right_up.valid)
+    {
+        return;
+    }
+
+    const drill3 edges_left_down = color_drill_3(pos, float2(-1, -1), gray1, gray2);
+    if(!edges_left_down.valid) return;
+
+    for(int i=0; i<3; i++)
+    {
+        const float dist1 = distance(edges_left_down.edges[i], pos);
+        const float dist2 = distance(edges_right_up.edges[i], pos);
+        if(abs(1 - dist1 / dist2) > 0.4 || dist1 < 3 || dist2 < 3) return;
+    }
+
+    const drill3 edges_left_up = color_drill_3(pos, float2(-1, 1), gray1, gray2);
+    if(!edges_left_up.valid) return;
+
+    const drill3 edges_right_down = color_drill_3(pos, float2(1, -1), gray1, gray2);
+    if(!edges_right_down.valid) return;
+
+    for(int i=0; i<3; i++)
+    {
+        const float dist1 = distance(edges_left_up.edges[i], pos);
+        const float dist2 = distance(edges_right_down.edges[i], pos);
+        if(abs(1 - dist1 / dist2) > 0.4 || dist1 < 3 || dist2 < 3) return;
+    }
+
+    const float2 center1 = lerp(edges_right.edges[2], edges_left.edges[2], 0.5);
+    const float2 center2 = lerp(edges_up.edges[2], edges_down.edges[2], 0.5);
+    const float2 center = (center1 + center2) / 2.0;
+    
+    const uint index = Finders.IncrementCounter();
+    if(index > 255) return;
+
+    Finders[index].count = 1;
+    Finders[index].center = center;
+
+    MergedFinders[index].count = 0;
+    MergedFinders[index].cluster = index;
+    MergedFinders[index].center = center;
+}
+
+
+[numthreads(8, 8, 1)]
+void merge_finders(uint3 id : SV_DispatchThreadID)
+{
+    if(Finders[id.x].count == 0 || Finders[id.y].count == 0) return;
+
+    if(distance(Finders[id.x].center, Finders[id.y].center) < 10)
+    {
+        int old_int;
+        InterlockedExchange(Finders[id.x].cluster, id.y, old_int);
+    }
+}
+
+[numthreads(8, 8, 4)]
+void sum_finder_centers(uint3 id : SV_DispatchThreadID)
+{
+    const uint index = id.x + id.y * 8 + id.z * 64;
+    if(index > 255) return;
+
+    if(Finders[index].count == 0) return;
+    
+    const int cluster = Finders[index].cluster;
+    
+    int old_count;
+    float2 old_pos;
+    float2 pos = (MergedFinders[cluster].center + Finders[index].center) / 2;
+    InterlockedExchange(MergedFinders[cluster].center.x, pos.x, old_pos.x);
+    InterlockedExchange(MergedFinders[cluster].center.y, pos.y, old_pos.x);
+    InterlockedAdd(MergedFinders[cluster].count, 1, old_count);
+}
+
+
+
+[numthreads(2, 2, 2)]
+void draw_finders(uint3 id : SV_DispatchThreadID)
+{
+    const uint index = id.x + id.y * 16 + id.z * 128;
+    if(index > 255) return;
+    
+    if(Finders[index].count == 0) return;
+    draw_cross(Finders[index].center, 7, RED);
+}
+
+[numthreads(8, 8, 1)]
+void draw_finder_candidates(uint3 id : SV_DispatchThreadID)
+{
+
+}

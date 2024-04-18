@@ -1,0 +1,5 @@
+sceneSetups:
+- path: Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity
+  isLoaded: 1
+  isActive: 1
+  isSubScene: 0

@@ -1,0 +1,550 @@
+/***************************************\
+ *                                      *
+ *           QR Code Finder             *
+ *      by Dariusz "De JET" Zolna       *
+ *     Copyright (c) 2023 Auki Labs     *
+ *                                      *
+ \**************************************/
+
+#pragma kernel clear_buffers
+#pragma kernel get_geometry
+#pragma kernel get_bits
+#pragma kernel draw_debug
+
+#include "Drawing.cginc"
+#include "Structs.cginc"
+
+RWStructuredBuffer<marker> Markers;
+RWStructuredBuffer<uint> MarkersBits;
+RWStructuredBuffer<float2> Geometry;
+
+bool _MirrorCorners;
+
+#include "Drilling.cginc"
+
+
+static void draw_point_count(float2 start, uint count, float color)
+{
+    count = clamp(0, 100, count);
+    for(uint i=0; i<count; i++)
+    {
+        draw_outlined_dot(start + float2(0, 2) * i, color);
+    }
+}
+
+float3 get_color_value(const float2 pos)
+{
+    float3 color = 0;
+    for(float y= -1; y <= 1; y++)
+    {
+        for(float x= -1; y <= 1; y++)
+        {
+            color += Colors[pos + float2(x, y)].rgb;
+        }
+    }
+    return color / 9;
+}
+
+static uint compare_color(const float3 color, const float3 dark, const float3 bright)
+{
+    return length(abs(color - dark)) < length(abs(color - bright));
+}
+
+static uint get_bit(const float3 dark, const float3 bright, const float2 cell_pos)
+{
+    const float3 color = get_color_value(cell_pos);
+    return compare_color(color, dark, bright) ? 1 : 0;
+}
+
+[numthreads(2, 2, 2)]
+void clear_buffers(uint3 id : SV_DispatchThreadID)
+{
+    const uint index = id.x + id.y * 16 + id.z * 128;
+    if(index > 255) return;
+    
+    int old_int;
+    const int bits_offset = index * 128;
+    for(uint i = 0; i < 128; i ++) InterlockedExchange(MarkersBits[bits_offset + i], 0, old_int);
+
+    const int start_index = index * 64;
+    for(uint i = 0; i < 64; i ++)
+    {
+        float old_float;
+        InterlockedExchange(Geometry[start_index + i].x, 0, old_float);
+        InterlockedExchange(Geometry[start_index + i].y, 0, old_float);
+    }
+}
+
+
+float2 get_cell_pos(const float2 geometry[64], const int x, const int y,
+                    const float2 corner1, const float2 corner2, const float2 corner3, const float2 corner4)
+{
+    const float h_lerp = lerp(geometry[x].x, geometry[x + 1].x, 0.5);
+    const float v_lerp = lerp(geometry[y].y, geometry[y + 1].y, 0.5);
+    const float2 top = lerp(corner1, corner2, h_lerp);
+    const float2 down = lerp(corner4, corner3, h_lerp);
+    return lerp(top, down, v_lerp);
+}
+
+
+[numthreads(2, 2, 2)]
+void get_geometry(const uint3 id : SV_DispatchThreadID)
+{
+    const uint index = id.x + id.y * 16 + id.z * 128;
+    if(index > 255) return;
+    
+    if(Markers[index].count != 1) return;
+
+    const uint cells_count = Markers[index].cells_count;
+
+    const float2 corner1 = Markers[index].corner1;
+    const float2 corner2 = Markers[index].corner2;
+    const float2 corner3 = Markers[index].corner3;
+    const float2 corner4 = Markers[index].corner4;
+
+    const float gray1 = Markers[index].gray_1;
+    const float gray2 = Markers[index].gray_0;
+
+    float2 pos1 = lerp(Markers[index].f0_down_2, Markers[index].f0_down_3, 0.5);
+    float2 pos2 = lerp(Markers[index].f1_down_2, Markers[index].f1_down_3, 0.5);
+    const timing_pattern timing_h = drill_timing(pos1, pos2, gray1, gray2);
+    if((timing_h.count + 13) != cells_count)
+    {
+        return;
+    }
+
+    pos1 = lerp(Markers[index].f0_right_2, Markers[index].f0_right_3, 0.5);
+    pos2 = lerp(Markers[index].f2_right_2, Markers[index].f2_right_3, 0.5);
+    const timing_pattern timing_v = drill_timing(pos1, pos2, gray1, gray2);
+    if((timing_v.count + 13) != cells_count)
+    {
+        return;
+    }
+
+    const float2 h_timing_start = get_intersection_point(corner1, corner4, timing_h.edges[timing_h.count - 1], timing_h.edges[0]);
+    const float2 h_timing_end = get_intersection_point(corner2, corner3, timing_h.edges[0], timing_h.edges[timing_h.count - 1]);
+    const float2 v_timing_start = get_intersection_point(corner1, corner2, timing_v.edges[timing_v.count - 1], timing_v.edges[0]);
+    const float2 v_timing_end = get_intersection_point(corner4, corner3, timing_v.edges[0], timing_v.edges[timing_v.count - 1]);
+    
+    const float2 h_finder_start = Markers[index].f0_left_3;
+    const float2 h_finder_end = Markers[index].f1_right_3;
+    const float2 v_finder_start = Markers[index].f0_up_3;
+    const float2 v_finder_end = Markers[index].f2_down_3;
+
+    float old_float;
+    float dist = 0;
+
+    float2 geom[64];
+    
+    float2 pos = Markers[index].f0_left_3;
+    geom[0].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+
+    pos = Markers[index].f0_left_2;
+    geom[1].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+    
+    pos = Markers[index].f0_left_1;
+    geom[2].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+    
+    pos = lerp(Markers[index].f0_left_1, Markers[index].f0_right_1, 0.333);
+    geom[3].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+    
+    pos = lerp(Markers[index].f0_left_1, Markers[index].f0_right_1, 0.666);
+    geom[4].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+    
+    pos = Markers[index].f0_right_1;
+    geom[5].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+    
+    pos = Markers[index].f0_right_2;
+    geom[6].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+    
+    pos = Markers[index].f0_right_3;
+    geom[7].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+
+
+    pos = Markers[index].f0_up_3;
+    geom[0].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+
+    pos = Markers[index].f0_up_2;
+    geom[1].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+
+    pos = Markers[index].f0_up_1;
+    geom[2].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+
+    pos = lerp(Markers[index].f0_up_1, Markers[index].f0_down_1, 0.333);
+    geom[3].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+
+    pos = lerp(Markers[index].f0_up_1, Markers[index].f0_down_1, 0.666);
+    geom[4].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+
+    pos = Markers[index].f0_down_1;
+    geom[5].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+
+    pos = Markers[index].f0_down_2;
+    geom[6].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+
+    pos = Markers[index].f0_down_3;
+    geom[7].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+
+
+    for(int i = 8; i < cells_count - 7; i++)
+    {
+        pos = timing_h.edges[i - 7];
+        geom[i].x = distance(h_timing_start, pos) / distance(h_timing_start, h_timing_end);
+    }
+    
+    for(int i = 8; i < cells_count - 7; i++)
+    {
+        pos = timing_v.edges[i - 7];
+        geom[i].y = distance(v_timing_start, pos) / distance(v_timing_start, v_timing_end);
+    }
+    
+    pos = Markers[index].f1_left_3;
+    geom[cells_count - 7].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+    
+    pos = Markers[index].f1_left_2;
+    geom[cells_count - 6].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+    
+    pos = Markers[index].f1_left_1;
+    geom[cells_count - 5].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+    
+    pos = lerp(Markers[index].f1_left_1, Markers[index].f1_right_1, 0.333);
+    geom[cells_count - 4].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+    
+    pos = lerp(Markers[index].f1_left_1, Markers[index].f1_right_1, 0.666);
+    geom[cells_count - 3].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+    
+    pos = Markers[index].f1_right_1;
+    geom[cells_count - 2].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+    
+    pos = Markers[index].f1_right_2;
+    geom[cells_count - 1].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+    
+    pos = Markers[index].f1_right_3;
+    geom[cells_count - 0].x = distance(h_finder_start, pos) / distance(h_finder_start, h_finder_end);
+
+        
+    pos = Markers[index].f2_up_3;
+    geom[cells_count - 7].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+    
+    pos = Markers[index].f2_up_2;
+    geom[cells_count - 6].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+    
+    pos = Markers[index].f2_up_1;
+    geom[cells_count - 5].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+    
+    pos = lerp(Markers[index].f2_up_1, Markers[index].f2_down_1, 0.333);
+    geom[cells_count - 4].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+    
+    pos = lerp(Markers[index].f2_up_1, Markers[index].f2_down_1, 0.666);
+    geom[cells_count - 3].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+    
+    pos = Markers[index].f2_down_1;
+    geom[cells_count - 2].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+    
+    pos = Markers[index].f2_down_2;
+    geom[cells_count - 1].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+    
+    pos = Markers[index].f2_down_3;
+    geom[cells_count - 0].y = distance(v_finder_start, pos) / distance(v_finder_start, v_finder_end);
+
+    for(int i = 0; i < 64; i++)
+    {
+        Geometry[index * 64 + i] = geom[i];
+    }
+}
+
+
+void write_uint_to_output(const int2 start_pos, const uint value)
+{
+    for(int i = 0; i < 32; i++)
+    {
+        if(value & (1 << i))
+        {
+            Output[start_pos + int2(i, 0)] = WHITE;
+        }
+        else
+        {
+            Output[start_pos + int2(i, 0)] = BLACK;
+        }
+    }
+}
+
+void write_corners_to_output(const int index, const float2 corner1, const float2 corner2, const float2 corner3, const float2 corner4)
+{
+    const uint c1 = corner1 * 1000;
+    const uint c2 = corner2 * 1000;
+    const uint c3 = corner3 * 1000;
+    const uint c4 = corner4 * 1000;
+
+    const int2 start_pos = int2((index & 3) * 128, index >> 2);
+    write_uint_to_output(start_pos, c1);
+    write_uint_to_output(start_pos + int2(32, 1), c2);
+    write_uint_to_output(start_pos + int2(64, 1), c3);
+    write_uint_to_output(start_pos + int2(96, 1), c4);
+}
+
+[numthreads(2, 2, 2)]
+void get_bits(const uint3 id : SV_DispatchThreadID)
+{
+    const uint index = id.x + id.y * 16 + id.z * 128;
+    if(index > 255) return;
+
+    if(Markers[index].count != 1) return;
+
+    const uint cells_count = Markers[index].cells_count;
+
+    const float2 corner1 = Markers[index].corner1;
+    const float2 corner2 = Markers[index].corner2;
+    float2 corner3 = Markers[index].corner3;
+    const float2 corner4 = Markers[index].corner4;
+
+    const float gray1 = Markers[index].gray_1;
+    const float gray2 = Markers[index].gray_0;
+
+
+    float2 pos1 = lerp(Markers[index].f0_down_2, Markers[index].f0_down_3, 0.5);
+    float2 pos2 = lerp(Markers[index].f1_down_2, Markers[index].f1_down_3, 0.5);
+    const timing_pattern timing_h = drill_timing(pos1, pos2, gray1, gray2);
+    if((timing_h.count + 13) != cells_count)
+    {
+        return;
+    }
+
+    pos1 = lerp(Markers[index].f0_right_2, Markers[index].f0_right_3, 0.5);
+    pos2 = lerp(Markers[index].f2_right_2, Markers[index].f2_right_3, 0.5);
+    const timing_pattern timing_v = drill_timing(pos1, pos2, gray1, gray2);
+    if((timing_v.count + 13) != cells_count)
+    {
+        return;
+    }
+    
+    float old_float;
+    float dist = 0;
+
+    float2 geom[64];
+    for(int i=0; i<64; i++)
+    {
+        geom[i] = Geometry[index * 64 + i];
+    }
+
+    int old_int;
+
+    float2 size;
+    Colors.GetDimensions(size.x, size.y);
+
+    uint max_y = 6;
+    uint max_x = 6;
+    float2 br = corner3;
+    float2 rb = corner3;
+    float2 pos;
+    for(uint i = 8; i < cells_count; i ++)
+    {
+        pos = get_cell_pos(geom, cells_count-1, i, corner1, corner2, corner3, corner4);
+        const float2 uv = pos / size;
+        const float gray = Colors.SampleLevel(sampler_colors_linear_clamp, uv, 0).r;
+
+        if(compare_gray(gray, gray1, gray2))
+        {
+            max_y = i;
+            pos1 = get_cell_pos(geom, cells_count-1, max_y, corner1, corner2, corner3, corner4);
+            pos2 = pos1 + (corner2 - corner1) / cells_count;
+            rb = super_drill(pos1, pos2);
+        }
+    }
+
+    for(uint i = 8; i < cells_count; i ++)
+    {
+        pos = get_cell_pos(geom, i, cells_count-1, corner1, corner2, corner3, corner4);
+        const float2 uv = pos / size;
+        const float gray = Colors.SampleLevel(sampler_colors_linear_clamp, uv, 0).r;
+        
+        if(compare_gray(gray, gray1, gray2))
+        {
+            max_x = i;
+            pos1 = get_cell_pos(geom, max_x, cells_count-1, corner1, corner2, corner3, corner4);
+            pos2 = pos1 + (corner4 - corner1) / cells_count;
+            br = super_drill(pos1, pos2);
+        }
+    }
+    corner3 = get_intersection_point(corner2, rb, corner4, br);
+
+
+    for(uint y = 0; y < 7; y ++)
+    {
+        for(uint x = 0; x < 7; x ++)
+        {
+            pos1 = get_cell_pos(geom, x, y, corner1, corner2, corner3, corner4);
+            float2 uv = pos1 / size;
+            float gray = Colors.SampleLevel(sampler_colors_linear_clamp, uv, 0).r;
+            const bool bit1 = compare_gray(gray, gray1, gray2);
+            
+            pos2 = get_cell_pos(geom, x+cells_count-7, y, corner1, corner2, corner3, corner4);
+            uv = pos2 / size;
+            gray = Colors.SampleLevel(sampler_colors_linear_clamp, uv, 0).r;
+            const bool bit2 = compare_gray(gray, gray1, gray2);
+
+            if(bit1 != bit2)
+            {
+                InterlockedExchange(Markers[index].count, 0, old_int);
+                return;
+            }
+            
+            float2 pos3 = get_cell_pos(geom, x, y+cells_count-7, corner1, corner2, corner3, corner4);
+            uv = pos3 / size;
+            gray = Colors.SampleLevel(sampler_colors_linear_clamp, uv, 0).r;
+            const bool bit3 = compare_gray(gray, gray1, gray2);
+            
+            if(bit1 != bit3)
+            {
+                InterlockedExchange(Markers[index].count, 0, old_int);
+                return;
+            }
+        }
+    }
+
+    for(uint i = 7; i < cells_count-13; i ++)
+    {
+        pos1 = get_cell_pos(geom, i, 6, corner1, corner2, corner3, corner4);
+        float2 uv = pos1 / size;
+        float gray = Colors.SampleLevel(sampler_colors_linear_clamp, uv, 0).r;
+        const bool bit1 = compare_gray(gray, gray1, gray2);
+        
+        pos2 = get_cell_pos(geom, 6, i, corner1, corner2, corner3, corner4);
+        uv = pos2 / size;
+        gray = Colors.SampleLevel(sampler_colors_linear_clamp, uv, 0).r;
+        const bool bit2 = compare_gray(gray, gray1, gray2);
+
+        if(bit1 != bit2)
+        {
+            InterlockedExchange(Markers[index].count, 0, old_int);
+            return;
+        }
+    }
+    
+//    draw_rect(corner1, corner2, corner3, corner4, RED);
+
+    const int bits_offset = Markers[index].bits_offset;
+    uint marker_id = 0;
+
+    pos = float2(index, 0);
+    Output[pos] = WHITE;
+    
+    for(uint y = 0; y < cells_count; y ++)
+    {
+        for(uint x = 0; x < cells_count; x ++)
+        {
+            pos = get_cell_pos(geom, x, y, corner1, corner2, corner3, corner4);
+            float2 uv = pos / size;
+            float gray = Colors.SampleLevel(sampler_colors_linear_clamp, uv, 0).r;
+            const bool bit = compare_gray(gray, gray1, gray2);
+
+            const int bit_index = y * cells_count + x;
+            InterlockedOr(MarkersBits[bits_offset + (bit_index >> 5)], bit << (bit_index & 31), old_int);
+            marker_id += bit << (bit_index & 31);
+        }
+    }
+
+    uint frame_id_encoded = 0;
+    for(uint x = 0; x < 21; x ++)
+    {
+        pos1 = get_cell_pos(geom, x, cells_count - 2, corner1, corner2, corner3, corner4);
+        pos2 = get_cell_pos(geom, x, cells_count - 1, corner1, corner2, corner3, corner4);
+
+        pos = pos2 + (pos2 - pos1) * 3;
+
+        float2 uv = pos / size;
+        float gray = Colors.SampleLevel(sampler_colors_linear_clamp, uv, 0).r;
+        const bool bit = compare_gray(gray, gray1, gray2);
+        frame_id_encoded |= bit << (20 - x);
+    }
+
+    uint frame_id = 0xffffffff;
+
+    const uint frame_id_check = 1 << 20 | 1;
+    if ((frame_id_encoded & frame_id_check) == frame_id_check)
+    {
+        frame_id = (((frame_id_encoded ^ frame_id_check) >> 1) & 0xffffff80) >> 4;
+        const uint frame_id_lo = ((frame_id_encoded ^ frame_id_check) >> 1) & 127;
+        uint frame_lo = 7;
+        for (uint i = 0; i < 7; i++)
+        {
+            if((frame_id_lo & (1 << (6-i))) != 0)
+            {
+                frame_lo = i;
+                break;
+            }
+        }
+        frame_id |= frame_lo;
+    }
+
+    float old_val;
+    InterlockedExchange(Markers[index].corner3.x, corner3.x, old_val);
+    InterlockedExchange(Markers[index].corner3.y, corner3.y, old_val);
+
+    if(_MirrorCorners)
+    {
+        InterlockedExchange(Markers[index].corner2.x, corner4.x, old_val);
+        InterlockedExchange(Markers[index].corner2.y, corner4.y, old_val);
+        InterlockedExchange(Markers[index].corner4.x, corner2.x, old_val);
+        InterlockedExchange(Markers[index].corner4.y, corner2.y, old_val);
+    }
+
+    InterlockedExchange(Markers[index].count, 2, old_int);
+    InterlockedExchange(Markers[index].id, marker_id, old_int);
+    InterlockedExchange(Markers[index].frame_id, frame_id, old_int);
+}
+
+
+
+
+[numthreads(8, 8, 1)]
+void draw_debug(uint3 id : SV_DispatchThreadID)
+{
+    const uint index = id.x + id.y * 8;
+    if(index > 255) return;
+    
+    if(Markers[index].count < 2) return;
+
+    const uint cells_count = Markers[index].cells_count;
+
+    const float2 corner1 = Markers[index].corner1;
+    const float2 corner2 = Markers[index].corner2;
+    const float2 corner3 = Markers[index].corner3;
+    const float2 corner4 = Markers[index].corner4;
+    
+    float2 geom[64];
+    for(int i=0; i<64; i++)
+    {
+        geom[i] = Geometry[index * 64 + i];
+    }
+
+    float2 pos = get_cell_pos(geom, 0, 0, corner1, corner2, corner3, corner4);
+    const float3 dark_gray = get_color_value(pos);
+    pos = get_cell_pos(geom, 1, 1, corner1, corner2, corner3, corner4);
+    const float3 bright_gray = get_color_value(pos);
+
+    for(uint y = 0; y < cells_count; y ++)
+    {
+        for(uint x = 0; x < cells_count; x ++)
+        {
+            pos = get_cell_pos(geom, x, y, corner1, corner2, corner3, corner4);
+            const uint bit = get_bit(dark_gray, bright_gray, pos);
+            
+            float c = RED;
+            if(bit != 0) c = BLUE;
+            Output[pos] = c;
+        }
+    }
+
+    for(uint x = 0; x < 21; x ++)
+    {
+        const float2 pos1 = get_cell_pos(geom, x, cells_count - 2, corner1, corner2, corner3, corner4);
+        const float2 pos2 = get_cell_pos(geom, x, cells_count - 1, corner1, corner2, corner3, corner4);
+
+        pos = pos2 + (pos2 - pos1) * 3;
+
+        const uint bit = get_bit(dark_gray, bright_gray, pos);
+        if(bit != 0) Output[pos] = BLUE;
+        else         Output[pos] = WHITE;
+    }
+}

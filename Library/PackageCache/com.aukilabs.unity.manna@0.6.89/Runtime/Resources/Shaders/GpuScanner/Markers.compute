@@ -1,0 +1,474 @@
+/***************************************\
+ *                                      *
+ *           QR Code Finder             *
+ *      by Dariusz "De JET" Zolna       *
+ *     Copyright (c) 2023 Auki Labs     *
+ *                                      *
+ \**************************************/
+
+#pragma kernel clear_buffers
+#pragma kernel find_markers
+#pragma kernel draw_markers
+
+#define PARALLEL 0.98
+
+#include "Drawing.cginc"
+#include "Structs.cginc"
+
+RWStructuredBuffer<finder> Finders;
+
+RWStructuredBuffer<marker> Markers;
+RWStructuredBuffer<uint> MarkersBits;
+
+#include "Drilling.cginc"
+
+
+
+[numthreads(8, 8, 4)]
+void clear_buffers(const uint index : SV_GroupIndex)
+{
+//    const uint index = id.x + id.y * 8 + id.z * 64;
+    if(index > 255) return;
+    
+//    Markers[index].count = 0;
+    int old_int;
+    InterlockedExchange(Markers[index].count, 0, old_int);
+}
+
+
+struct sorted_corners
+{
+    float2 corners[4];
+};
+
+sorted_corners get_sorted_corners(const float2 base_pos, const float2 positions[4], const uint base_corner)
+{
+    float max_distance = 0;
+    uint max_index = 0;
+    for(uint i=0; i<4; i++)
+    {
+        if(distance(base_pos, positions[i]) > max_distance)
+        {
+            max_distance = distance(base_pos, positions[i]);
+            max_index = i;
+        }
+    }
+
+    sorted_corners sorted;
+    for(uint i = 0; i < 4; i++)
+    {
+        sorted.corners[(base_corner + i) % 4] = positions[(max_index + i) % 4];
+    }
+    
+    return sorted;
+}
+
+float2 get_vectors_intersection(float2 p1, float2 p1_dir, float2 p2, float2 p2_dir)
+{
+    const float denominator = p1_dir.x * p2_dir.y - p1_dir.y * p2_dir.x;
+
+    float2 start_point_difference = p2 - p1;
+    const float t_numerator = (start_point_difference.x * p2_dir.y - start_point_difference.y * p2_dir.x);
+
+    const float t = t_numerator / denominator;
+
+    return p1 + t * p1_dir;
+}
+
+float get_angle(float2 a, float2 b)
+{
+    return abs(atan2(b.y - a.y, b.x - a.x));
+}
+
+float2 perpendicular(float2 dir)
+{
+    return float2(dir.y, -dir.x);
+}
+
+bool on_segment(float2 p, float2 q, float2 r)
+{
+    if (q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) &&
+        q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y))
+            return true;
+  
+    return false;
+}
+  
+// To find orientation of ordered triplet (p, q, r).
+// The function returns following values
+// 0 --> p, q and r are collinear
+// 1 --> Clockwise
+// 2 --> Counterclockwise
+int orientation(float2 p, float2 q, float2 r)
+{
+    // See https://www.geeksforgeeks.org/orientation-3-ordered-points/
+    // for details of below formula.
+    const int val = (q.y - p.y) * (r.x - q.x) -
+            (q.x - p.x) * (r.y - q.y);
+  
+    if (val == 0) return 0; // collinear
+  
+    return (val > 0)? 1: 2; // clock or counterclock wise
+}
+  
+// The main function that returns true if line segment 'p1q1'
+// and 'p2q2' intersect.
+bool do_intersect(const float2 p1, const float2 q1, const float2 p2, const float2 q2)
+{
+    // Find the four orientations needed for general and
+    // special cases
+    const int o1 = orientation(p1, q1, p2);
+    const int o2 = orientation(p1, q1, q2);
+    const int o3 = orientation(p2, q2, p1);
+    const int o4 = orientation(p2, q2, q1);
+  
+    // General case
+    if (o1 != o2 && o3 != o4)
+        return true;
+  
+    // Special Cases
+    // p1, q1 and p2 are collinear and p2 lies on segment p1q1
+    if (o1 == 0 && on_segment(p1, p2, q1)) return true;
+  
+    // p1, q1 and q2 are collinear and q2 lies on segment p1q1
+    if (o2 == 0 && on_segment(p1, q2, q1)) return true;
+  
+    // p2, q2 and p1 are collinear and p1 lies on segment p2q2
+    if (o3 == 0 && on_segment(p2, p1, q2)) return true;
+  
+    // p2, q2 and q1 are collinear and q1 lies on segment p2q2
+    if (o4 == 0 && on_segment(p2, q1, q2)) return true;
+  
+    return false; // Doesn't fall in any of the above cases
+}
+
+
+[numthreads(4,4,4)]
+void find_markers(uint3 id : SV_DispatchThreadID)
+{
+    const uint finder0 = id.x;
+    const uint finder1 = id.y;
+    const uint finder2 = id.z;
+
+    if(finder0 > 255 || finder1 > 255 || finder2 > 255) return;
+
+    if(finder0 == finder1 || finder0 == finder2 || finder1 == finder2) return;
+    
+    if(Finders[finder0].count == 0 || Finders[finder1].count == 0 || Finders[finder2].count == 0) return;
+
+    const float2 f0_pos = Finders[finder0].center;
+    const float2 f1_pos = Finders[finder1].center;
+    const float2 f2_pos = Finders[finder2].center;
+
+    if(distance(f0_pos, f1_pos) < 20 || distance(f0_pos, f2_pos) < 20 || distance(f1_pos, f2_pos) < 20) return;
+
+    const float2 horizontal_dir = normalize(f1_pos - f0_pos);
+    const float2 vertical_dir = normalize(f2_pos - f0_pos);
+
+    if(dot(horizontal_dir, vertical_dir) > 0.7)
+    {
+        return;
+    }
+
+    const float side = sign((f1_pos.x - f0_pos.x) * (f2_pos.y - f0_pos.y) - (f1_pos.y - f0_pos.y) * (f2_pos.x - f0_pos.x));
+    if(side >= 0) return;
+    
+    drill3 f0_edges_right = color_drill_3(f0_pos, float2(1, 0));
+    if(!f0_edges_right.valid)
+    {
+        return;
+    }
+
+    const float gray1 = Colors[f0_pos].r;
+    const float gray2 = Colors[lerp(f0_edges_right.edges[0], f0_edges_right.edges[1], 0.5)].r;
+
+    f0_edges_right = color_drill_3(f0_pos, horizontal_dir, gray1, gray2);
+    if(!f0_edges_right.valid)
+    {
+        return;
+    }
+    
+    const drill3 f0_edges_left = color_drill_3(f0_pos, -horizontal_dir, gray1, gray2);
+    if(!f0_edges_left.valid)
+    {
+        return;
+    }
+    
+    const drill3 f0_edges_up = color_drill_3(f0_pos, -vertical_dir, gray1, gray2);
+    if(!f0_edges_up.valid)
+    {
+        return;
+    }
+
+    const drill3 f0_edges_down = color_drill_3(f0_pos, vertical_dir, gray1, gray2);
+    if(!f0_edges_down.valid)
+    {
+        return;
+    }
+
+    const drill3 f1_edges_right = color_drill_3(f1_pos, horizontal_dir, gray1, gray2);
+    if(!f1_edges_right.valid) 
+    {
+        return;
+    }
+    
+    const drill3 f1_edges_up = color_drill_3(f1_pos, -vertical_dir, gray1, gray2);
+    if(!f1_edges_up.valid)
+    {
+        return;
+    }
+
+    const drill3 f1_edges_down = color_drill_3(f1_pos, vertical_dir, gray1, gray2);
+    if(!f1_edges_down.valid)
+    {
+        return;
+    }
+
+    const drill3 f1_edges_left = color_drill_3(f1_pos, -horizontal_dir, gray1, gray2);
+    if(!f1_edges_left.valid)
+    {
+        return;
+    }
+
+    if(dot(horizontal_dir, normalize(f1_edges_up.edges[2] - f0_edges_up.edges[2])) < PARALLEL)
+    {
+        return;
+    }
+
+    if(dot(horizontal_dir, normalize(f1_edges_down.edges[2] - f0_edges_down.edges[2])) < PARALLEL)
+    {
+        return;
+    }
+
+    const drill3 f2_edges_left = color_drill_3(f2_pos, -horizontal_dir, gray1, gray2);
+    if(!f2_edges_left.valid)
+    {
+        return;
+    }
+
+    if(dot(vertical_dir, normalize(f2_edges_left.edges[2] - f0_edges_left.edges[2])) < 0.99)
+    {
+        return;
+    }
+
+    const drill3 f2_edges_right = color_drill_3(f2_pos, horizontal_dir, gray1, gray2);
+    if(!f2_edges_right.valid)
+    {
+        return;
+    }
+
+    if(dot(vertical_dir, normalize(f2_edges_right.edges[2] - f0_edges_right.edges[2])) < PARALLEL)
+    {
+        return;
+    }
+
+    const drill3 f2_edges_up = color_drill_3(f2_pos, -vertical_dir, gray1, gray2);
+    if(!f2_edges_up.valid)
+    {
+        return;
+    }
+
+    const drill3 f2_edges_down = color_drill_3(f2_pos, vertical_dir, gray1, gray2);
+    if(!f2_edges_down.valid)
+    {
+        return;
+    }
+
+    float2 pos1 = lerp(f0_edges_down.edges[1], f0_edges_down.edges[2], 0.5);
+    float2 pos2 = lerp(f1_edges_down.edges[1], f1_edges_down.edges[2], 0.5);
+    const timing_pattern timing_h = drill_timing(pos1, pos2, gray1, gray2);
+    if(timing_h.count == 0)
+    {
+        return;
+    }
+    
+    const int count_h = timing_h.count + 13; 
+    if(count_h < 21  || (count_h & 1) == 0)
+    {
+        return;
+    }
+
+    pos1 = lerp(f0_edges_right.edges[1], f0_edges_right.edges[2], 0.5);
+    pos2 = lerp(f2_edges_right.edges[1], f2_edges_right.edges[2], 0.5);
+    const timing_pattern timing_v = drill_timing(pos1, pos2, gray1, gray2);
+    if(timing_v.count == 0)
+    {
+        return;
+    }
+        
+    const int count_v = timing_v.count + 13;
+    if(count_v < 21  || (count_v & 1) == 0)
+    {
+        return;
+    }
+
+    if(count_h != count_v)
+    {
+        return;
+    }
+
+    float2 end_pos = lerp(f0_edges_left.edges[1], f0_edges_left.edges[2], 0.3);
+    float2 start_pos = end_pos - distance(f0_edges_up.edges[2], f0_pos) * vertical_dir * 1.3;
+    end_pos = lerp(end_pos, start_pos, 0.6);
+    const float2 tl = super_drill(end_pos, start_pos);
+
+    end_pos = lerp(f1_edges_right.edges[1], f1_edges_right.edges[2], 0.3);
+    start_pos = end_pos - distance(f1_edges_up.edges[2], f1_pos) * vertical_dir * 1.3;
+    end_pos = lerp(end_pos, start_pos, 0.6);
+    const float2 tr = super_drill(end_pos, start_pos);
+
+    end_pos = lerp(f1_edges_up.edges[1], f1_edges_up.edges[2], 0.3);
+    start_pos = end_pos + distance(f1_edges_right.edges[2], f1_pos) * horizontal_dir * 1.3;
+    end_pos = lerp(end_pos, start_pos, 0.6);
+    const float2 rt = super_drill(end_pos, start_pos);
+
+    end_pos = lerp(f1_edges_down.edges[1], f1_edges_down.edges[2], 0.3);
+    start_pos = end_pos + distance(f1_edges_right.edges[2], f1_pos) * horizontal_dir * 1.3;
+    end_pos = lerp(end_pos, start_pos, 0.6);
+    float2 rb = super_drill(end_pos, start_pos);
+
+    end_pos = lerp(f0_edges_up.edges[1], f0_edges_up.edges[2], 0.3);
+    start_pos = end_pos + (f0_edges_left.edges[2] - f0_pos) * 1.3;
+    end_pos = lerp(end_pos, start_pos, 0.6);
+    const float2 lt = super_drill(end_pos, start_pos);
+
+    end_pos = lerp(f2_edges_down.edges[1], f2_edges_down.edges[2], 0.3);
+    start_pos = end_pos - distance(f2_edges_left.edges[2], f2_pos) * horizontal_dir * 1.3;
+    end_pos = lerp(end_pos, start_pos, 0.6);
+    const float2 lb = super_drill(end_pos, start_pos);
+
+    end_pos = lerp(f2_edges_right.edges[1], f2_edges_right.edges[2], 0.3);
+    start_pos = end_pos + (f2_edges_down.edges[2] - f2_pos) * 1.3;
+    end_pos = lerp(end_pos, start_pos, 0.6);
+    float2 br = super_drill(end_pos, start_pos);
+
+    end_pos = lerp(f2_edges_left.edges[1], f2_edges_left.edges[2], 0.3);
+    start_pos = end_pos + (f2_edges_down.edges[2] - f2_pos) * 1.3;
+    end_pos = lerp(end_pos, start_pos, 0.6);
+    const float2 bl = super_drill(end_pos, start_pos);
+
+    const float2 corner1 = get_intersection_point(tr, tl, lb, lt);
+    const float2 corner2 = get_intersection_point(tl, tr, rb, rt);
+    const float2 corner3 = get_intersection_point(rt, rb, bl, br);
+    const float2 corner4 = get_intersection_point(lt, lb, br, bl);
+    
+    if(dot(horizontal_dir, normalize(corner2 - corner1)) < PARALLEL)
+    {
+        return;
+    }
+    
+    if(dot(horizontal_dir, normalize(corner3 - corner4)) < PARALLEL)
+    {
+        return;
+    }
+
+    if(dot(vertical_dir, normalize(corner4 - corner1)) < PARALLEL)
+    {
+        return;
+    }
+    
+    if(dot(vertical_dir, normalize(corner3 - corner2)) < PARALLEL)
+    {
+        return;
+    }
+    
+
+    if(do_intersect(corner1, corner2, corner3, corner4))
+    {
+        return;
+    }
+    
+    if(do_intersect(corner2, corner3, corner4, corner1))
+    {
+        return;
+    }
+
+    const int cells_count = count_h;
+    const int index = finder0;
+    uint old_int;
+    
+    float old_val;
+
+    Markers[index].corner1 = corner1;
+    Markers[index].corner2 = corner2;
+    Markers[index].corner3 = corner3;
+    Markers[index].corner4 = corner4;
+    
+    Markers[index].gray_0 = gray2;
+    Markers[index].gray_1 = gray1;
+    
+    Markers[index].f0_pos = f0_pos.x;
+    Markers[index].f1_pos = f1_pos.x;
+    Markers[index].f2_pos = f2_pos.x;
+
+    Markers[index].f0_up_1 = f0_edges_up.edges[0];
+    Markers[index].f0_up_2 = f0_edges_up.edges[1];
+    Markers[index].f0_up_3 = f0_edges_up.edges[2];
+
+    Markers[index].f0_right_1 = f0_edges_right.edges[0];
+    Markers[index].f0_right_2 = f0_edges_right.edges[1];
+    Markers[index].f0_right_3 = f0_edges_right.edges[2];
+
+    Markers[index].f0_down_1 = f0_edges_down.edges[0];
+    Markers[index].f0_down_2 = f0_edges_down.edges[1];
+    Markers[index].f0_down_3 = f0_edges_down.edges[2];
+
+    Markers[index].f0_left_1 = f0_edges_left.edges[0];
+    Markers[index].f0_left_2 = f0_edges_left.edges[1];
+    Markers[index].f0_left_3 = f0_edges_left.edges[2];
+
+    Markers[index].f1_up_1 = f1_edges_up.edges[0];
+    Markers[index].f1_up_2 = f1_edges_up.edges[1];
+    Markers[index].f1_up_3 = f1_edges_up.edges[2];
+
+    Markers[index].f1_right_1 = f1_edges_right.edges[0];
+    Markers[index].f1_right_2 = f1_edges_right.edges[1];
+    Markers[index].f1_right_3 = f1_edges_right.edges[2];
+
+    Markers[index].f1_down_1 = f1_edges_down.edges[0];
+    Markers[index].f1_down_2 = f1_edges_down.edges[1];
+    Markers[index].f1_down_3 = f1_edges_down.edges[2];
+
+    Markers[index].f1_left_1 = f1_edges_left.edges[0];
+    Markers[index].f1_left_2 = f1_edges_left.edges[1];
+    Markers[index].f1_left_3 = f1_edges_left.edges[2];
+    
+    Markers[index].f2_up_1 = f2_edges_up.edges[0];
+    Markers[index].f2_up_2 = f2_edges_up.edges[1];
+    Markers[index].f2_up_3 = f2_edges_up.edges[2];
+
+    Markers[index].f2_right_1 = f2_edges_right.edges[0];
+    Markers[index].f2_right_2 = f2_edges_right.edges[1];
+    Markers[index].f2_right_3 = f2_edges_right.edges[2];
+
+    Markers[index].f2_down_1 = f2_edges_down.edges[0];
+    Markers[index].f2_down_2 = f2_edges_down.edges[1];
+    Markers[index].f2_down_3 = f2_edges_down.edges[2];
+
+    Markers[index].f2_left_1 = f2_edges_left.edges[0];
+    Markers[index].f2_left_2 = f2_edges_left.edges[1];
+    Markers[index].f2_left_3 = f2_edges_left.edges[2];
+
+    Markers[index].cells_count = cells_count;
+    Markers[index].bits_offset = index * 128;
+
+    Markers[index].count = 1;
+    
+    Finders[finder0].count = 0;
+    Finders[finder1].count = 0;
+    Finders[finder2].count = 0;
+}
+
+[numthreads(8, 8, 4)]
+void draw_markers(uint3 id : SV_DispatchThreadID)
+{
+    const uint index = id.x + id.y * 8 + id.z * 64;
+    if(index > 255)
+    {
+        return;
+    }
+    
+    if(Markers[index].count < 2) return;
+
+    draw_rect(Markers[index].corner1, Markers[index].corner2, Markers[index].corner3, Markers[index].corner4, RED);
+}

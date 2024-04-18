@@ -1,0 +1,46 @@
+{
+  "name": "com.aukilabs.unity.manna",
+  "version": "0.6.89",
+  "displayName": "Auki Labs ConjureKit Manna Module",
+  "description": "The Manna module enables devices to establish their pose in another device's Session by scanning a Lighthouse (QR code) on the screen of the other device.",
+  "unity": "2020.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "https://www.aukilabs.com",
+  "dependencies": {
+    "com.aukilabs.unity.conjurekit": "0.6.31",
+    "com.unity.nuget.newtonsoft-json": "3.0.2",
+    "com.unity.mathematics": "1.2.6"
+  },
+  "author": {
+    "name": "Auki Labs",
+    "email": "info@aukilabs.com",
+    "url": "https://www.aukilabs.com"
+  },
+  "files": [
+    "package.json.meta",
+    "Runtime",
+    "Runtime.meta",
+    "Samples~",
+    "Editor",
+    "Editor.meta",
+    "Sources",
+    "Sources.meta"
+  ],
+  "samples": [
+    {
+      "displayName": "Demo",
+      "description": "A demo project that showcases basic Manna functionality - displaying a dynamic lighthouse and performing Instant Calibration from one.",
+      "path": "Samples~/Demo"
+    },
+    {
+      "displayName": "OnLighthouseTracked demo",
+      "description": "A demo project that showcases a custom implementation of the Manna OnLighthouseTracked callback.",
+      "path": "Samples~/OnLighthouseTrackedDemo"
+    },
+    {
+      "displayName": "Custom static lighthouse selector demo",
+      "description": "A demo project that showcases Instant Calibration from a static lighthouse.",
+      "path": "Samples~/CustomStaticLighthouseSelectorDemo"
+    }
+  ]
+}

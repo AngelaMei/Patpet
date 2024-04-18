@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 0
+    path: Assets/Scenes/SampleScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity
+    guid: 6752fda860a2d4ed99b93672bb0410f1
+  - enabled: 1
+    path: Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity
+    guid: c46b46c87072e424b92b69d757143778
+  - enabled: 1
+    path: Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding
+      1.unity
+    guid: ff50a3276ea2c43119f8a5b5fbb7aa7a
+  - enabled: 1
+    path: Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding
+      2.unity
+    guid: 75441356e03bc403c940b6bcd0097eef
+  - enabled: 1
+    path: Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding
+      3.unity
+    guid: d0eaeb00f6370442682350ab6ecce913
+  - enabled: 1
+    path: Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding
+      4.unity
+    guid: ae03aed6a9e094f3fadd02e89b67f7a7
+  m_configObjects:
+    UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: 606892f564ce14e60aa47266e70512bb, type: 2}
+    com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: d00d439f6e5aa48dd8150df176f0cc15, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 34af2b32a41b0414288b62b5b436fe56, type: 2}

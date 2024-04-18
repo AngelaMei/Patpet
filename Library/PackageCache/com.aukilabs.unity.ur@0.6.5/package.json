@@ -1,0 +1,34 @@
+{
+  "name": "com.aukilabs.unity.ur",
+  "version": "0.6.5",
+  "displayName": "Auki Labs ConjureKit Ur Module",
+  "description": "Ur provides best in class monocular hand tracking for AR applications.",
+  "unity": "2020.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "https://www.aukilabs.com",
+  "dependencies": {
+    "com.unity.xr.arfoundation": "4.2.6"
+  },
+  "author": {
+    "name": "Auki Labs",
+    "email": "info@aukilabs.com",
+    "url": "https://www.aukilabs.com"
+  },
+  "files": [
+    "package.json.meta",
+    "Runtime",
+    "Runtime.meta",
+    "Samples~",
+    "Editor",
+    "Editor.meta",
+    "Sources",
+    "Sources.meta"
+  ],
+  "samples": [
+    {
+      "displayName": "Demo",
+      "description": "A demo project that showcases basic functionality of the Ur hand tracker",
+      "path": "Samples~/Demo"
+    }
+  ]
+}
