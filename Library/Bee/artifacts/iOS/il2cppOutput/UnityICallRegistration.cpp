@@ -4906,6 +4906,10 @@ void RegisterAllStrippedInternalCalls()
 
 	//Start Registrations for type : UnityEngine.WebCamTexture
 
+		//System.Boolean UnityEngine.WebCamTexture::get_isPlaying()
+		void Register_UnityEngine_WebCamTexture_get_isPlaying();
+		Register_UnityEngine_WebCamTexture_get_isPlaying();
+
 		//System.Boolean UnityEngine.WebCamTexture::get_videoVerticallyMirrored()
 		void Register_UnityEngine_WebCamTexture_get_videoVerticallyMirrored();
 		Register_UnityEngine_WebCamTexture_get_videoVerticallyMirrored();

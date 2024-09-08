@@ -50,11 +50,31 @@ namespace AukiHandTrackerSample
         [SerializeField] private Renderer fingertipLandmark;
 
         public bool hasPlayedDead = false;
+        // public bool hasPlayedSpin = false;        
         private GameObject raccoonObject;
         private Animator raccoonAnimator;
+        public Text dollNameText;
+
+        // Intimicy
+        public Image healthBar;
+        public float healthAmount = 0f;
+        public Text levelText; // Reference to the Text UI element displaying the level
+        public float requiredIntimacy = 10f; // Amount of intimacy needed per level
+        private int currentLevel = 1;
+        private float currentIntimacy;
+
+
 
         private void Start()
         {
+            //DollName
+            string retrievedName = PlayerPrefs.GetString("DollName", "");
+            dollNameText.text = retrievedName;
+            Debug.Log("Retrieved Doll Name: " + retrievedName);
+
+            //Level
+            UpdateLevelText();
+
             arCameraManager = arCamera.GetComponent<ARCameraManager>();
         
             _conjureKit = new ConjureKit(
@@ -123,27 +143,78 @@ namespace AukiHandTrackerSample
                             _handLandmarks[l].transform.localPosition = handPosition + handLandmarksPositions[l];
                         }
                         
+                        var thumbPalmDistance = Vector3.Distance(handLandmarksPositions[4], handLandmarksPositions[0]);
                         var indexPalmDistance = Vector3.Distance(handLandmarksPositions[8], handLandmarksPositions[0]);
                         var middlePalmDistance = Vector3.Distance(handLandmarksPositions[12], handLandmarksPositions[0]);
                         var ringPalmDistance = Vector3.Distance(handLandmarksPositions[16], handLandmarksPositions[0]);
                         var pinkyPalmDistance = Vector3.Distance(handLandmarksPositions[20], handLandmarksPositions[0]);
 
-                        if (indexPalmDistance > 0.1f && middlePalmDistance < 0.08f && ringPalmDistance < 0.08f && pinkyPalmDistance < 0.08f)
+                        // Play Dead Gesture
+                        if (thumbPalmDistance > 0.1f && indexPalmDistance > 0.1f && middlePalmDistance < 0.08f && ringPalmDistance < 0.08f && pinkyPalmDistance < 0.08f)
                         {
                             if (!hasPlayedDead)
                             {
-                                Debug.Log("here");
+                                Debug.Log("Time to Playdead");
                                 PlayDead();
                             }
                             else{
-                                Debug.Log(hasPlayedDead);
+                                Debug.Log("here:" + hasPlayedDead);
+                                
                             }
                         } else {
-                            Debug.Log("indexPalmDistance" + indexPalmDistance);
-                            Debug.Log("middlePalmDistance" + middlePalmDistance);
-                            Debug.Log("ringPalmDistance" + ringPalmDistance);
-                            Debug.Log("pinkyPalmDistance" + pinkyPalmDistance);
+                            // Debug.Log("indexPalmDistance" + indexPalmDistance);
+                            // Debug.Log("middlePalmDistance" + middlePalmDistance);
+                            // Debug.Log("ringPalmDistance" + ringPalmDistance);
+                            // Debug.Log("pinkyPalmDistance" + pinkyPalmDistance);
                         }
+
+                        // ThumbUp
+                        if (thumbPalmDistance > 0.1f && indexPalmDistance < 0.08f && middlePalmDistance < 0.08f && ringPalmDistance < 0.08f && pinkyPalmDistance < 0.08f)
+                        {
+                            if (hasPlayedDead)
+                            {
+                                Debug.Log("ThumbUp");
+                                GetUp();
+                            }
+                            else{
+                                Debug.Log("here:" + hasPlayedDead);
+                            }
+                        }
+                        // } else {
+                        //     Debug.Log("thumbPalmDistance" + thumbPalmDistance);
+                        //     Debug.Log("indexPalmDistance" + indexPalmDistance);
+                        //     Debug.Log("middlePalmDistance" + middlePalmDistance);
+                        //     Debug.Log("ringPalmDistance" + ringPalmDistance);
+                        //     Debug.Log("pinkyPalmDistance" + pinkyPalmDistance);
+                        if (thumbPalmDistance < 0.08f && indexPalmDistance > 0.1f && middlePalmDistance < 0.08f && ringPalmDistance < 0.08f && pinkyPalmDistance > 0.06f)
+                        {
+                            Debug.Log("Spin!!");
+                            PlaySpin();
+                        } else {
+                            // Debug.Log("thumbPalmDistance" + thumbPalmDistance);
+                            // Debug.Log("indexPalmDistance" + indexPalmDistance);
+                            // Debug.Log("middlePalmDistance" + middlePalmDistance);
+                            // Debug.Log("ringPalmDistance" + ringPalmDistance);
+                            // Debug.Log("pinkyPalmDistance" + pinkyPalmDistance);
+                        }
+
+                        //Lv2
+                        if (currentLevel >= 2)
+                        {
+                            //Dance
+                            if (thumbPalmDistance < 0.08f && indexPalmDistance > 0.1f && middlePalmDistance > 0.1f && ringPalmDistance < 0.08f && pinkyPalmDistance < 0.08f)
+                            {
+                                Debug.Log("Dance");
+                                Dance();
+                            } else {
+                                Debug.Log("thumbPalmDistance" + thumbPalmDistance);
+                                Debug.Log("indexPalmDistance" + indexPalmDistance);
+                                Debug.Log("middlePalmDistance" + middlePalmDistance);
+                                Debug.Log("ringPalmDistance" + ringPalmDistance);
+                                Debug.Log("pinkyPalmDistance" + pinkyPalmDistance);
+                            }
+                        }
+
                     }
                 }
             };
@@ -156,6 +227,11 @@ namespace AukiHandTrackerSample
         {
             _handTracker.Update();
             FeedMannaWithVideoFrames();
+
+            //test
+            if(Input.GetKeyDown(KeyCode.Space)){
+                IncreaseIntimacy(1);
+            }
         }
 
         private void FeedMannaWithVideoFrames()
@@ -204,7 +280,7 @@ namespace AukiHandTrackerSample
             if (_conjureKit.GetState() != State.Calibrated)
                 return;
             
-            Ray ray = arCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+            Ray ray = arCamera.ScreenPointToRay(new Vector3(Screen.width / 3, Screen.height / 3));
             List<ARRaycastHit> hits = new List<ARRaycastHit>();
             
             if (arRaycastManager.Raycast(ray, hits, TrackableType.PlaneWithinPolygon))
@@ -226,6 +302,7 @@ namespace AukiHandTrackerSample
             var pose = _conjureKit.GetSession().GetEntityPose(entity);
             Instantiate(raccoon, pose.position, pose.rotation);
             GameObject.Find("SpawnButton").SetActive(false); // Remove spawn button
+            GameObject.Find("scan").SetActive(false);
         }
 
         public void PlayDead()
@@ -234,14 +311,57 @@ namespace AukiHandTrackerSample
             raccoonObject = GameObject.Find("Pudu(Clone)");
             raccoonAnimator = raccoonObject.GetComponent<Animator>();
             raccoonAnimator.SetTrigger("PlayDead");
+            IncreaseIntimacy(3);
         }
 
         public void GetUp()
         {
+            Debug.Log("GetUp Function worked" + hasPlayedDead);
             hasPlayedDead = false;
             raccoonObject = GameObject.Find("Pudu(Clone)");
             raccoonAnimator = raccoonObject.GetComponent<Animator>();
             raccoonAnimator.SetTrigger("GetUp");
+            IncreaseIntimacy(3);
         }
-    }
+
+
+        public void PlaySpin()
+        {
+            //Debug.Log("PlaySpin Function worked" + hasPlayedSpin);
+            //hasPlayedSpin = true;
+            raccoonObject = GameObject.Find("Pudu(Clone)");
+            raccoonAnimator = raccoonObject.GetComponent<Animator>();
+            raccoonAnimator.SetTrigger("Spin");
+            IncreaseIntimacy(3);
+        }
+
+        public void Dance()
+        {
+            raccoonObject = GameObject.Find("Pudu(Clone)");
+            raccoonAnimator = raccoonObject.GetComponent<Animator>();
+            raccoonAnimator.SetTrigger("Dance");
+            IncreaseIntimacy(3);
+        }
+
+        
+
+        public void IncreaseIntimacy(float intimacy)
+        {
+            currentIntimacy += intimacy;
+            currentIntimacy = Mathf.Clamp(currentIntimacy, 0, requiredIntimacy); // Clamp intimacy
+            healthBar.fillAmount = currentIntimacy / requiredIntimacy; // Assuming healthBar is for intimacy display
+
+            if (currentIntimacy >= requiredIntimacy)
+            {
+                currentLevel++;
+                currentIntimacy = 0f; // Reset intimacy for next level
+                requiredIntimacy += 10f;
+                UpdateLevelText();
+            }
+        }
+        private void UpdateLevelText()
+        {
+            levelText.text = $"Lv. {currentLevel}";
+        }
+    }    
 }

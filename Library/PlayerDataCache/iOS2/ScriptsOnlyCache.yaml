@@ -75,11 +75,14 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.LayoutElement
     - UnityEngine.UI.RectMask2D
     - UnityEngine.UI.Text
+    - UnityEngine.UI.Toggle
     UrSample.dll:
     - AukiHandTrackerSample.HandCalibration
     - AukiHandTrackerSample.HandLandmark
     - AukiHandTrackerSample.Main
     - AukiHandTrackerSample.TouchableByHand
+    - Cam
+    - ReadInput
     - buttons
   serializedClasses:
     Unity.TextMeshPro:
@@ -123,16 +126,98 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
     - UnityEngine.UI.Navigation
     - UnityEngine.UI.SpriteState
+    - UnityEngine.UI.Toggle/ToggleEvent
   methodsToPreserve:
   - assembly: UrSample
     fullTypeName: buttons
     methodName: GoToScene
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
   - assembly: UrSample
     fullTypeName: AukiHandTrackerSample.Main
     methodName: CreateRaccoonEntity
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
   - assembly: UrSample
     fullTypeName: AukiHandTrackerSample.Main
     methodName: ToggleLighthouse
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UnityEngine.CoreModule
+    fullTypeName: UnityEngine.GameObject
+    methodName: SetActive
+  - assembly: UrSample
+    fullTypeName: buttons
+    methodName: GoToScene
+  - assembly: UrSample
+    fullTypeName: buttons
+    methodName: GoToScene
+  - assembly: UrSample
+    fullTypeName: ReadInput
+    methodName: ReadStringInput
   - assembly: UrSample
     fullTypeName: buttons
     methodName: GoToScene
@@ -142,12 +227,6 @@ ScriptsOnlyBuild:
   - assembly: UrSample
     fullTypeName: buttons
     methodName: GoToScene
-  - assembly: UrSample
-    fullTypeName: buttons
-    methodName: GoToScene
-  - assembly: UrSample
-    fullTypeName: buttons
-    methodName: UserNameInput
   sceneClasses:
     Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity:
     - Class: 1
@@ -189,49 +268,53 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 1796}
     - Class: 114
-      Script: {instanceID: 3064}
+      Script: {instanceID: 2414}
     - Class: 114
-      Script: {instanceID: 3340}
+      Script: {instanceID: 3068}
     - Class: 114
-      Script: {instanceID: 3588}
+      Script: {instanceID: 3344}
     - Class: 114
-      Script: {instanceID: 3728}
+      Script: {instanceID: 3592}
     - Class: 114
-      Script: {instanceID: 3972}
+      Script: {instanceID: 3732}
     - Class: 114
-      Script: {instanceID: 4496}
+      Script: {instanceID: 3976}
     - Class: 114
-      Script: {instanceID: 4580}
+      Script: {instanceID: 4500}
     - Class: 114
-      Script: {instanceID: 5152}
+      Script: {instanceID: 4584}
     - Class: 114
-      Script: {instanceID: 5362}
+      Script: {instanceID: 5156}
     - Class: 114
-      Script: {instanceID: 5788}
+      Script: {instanceID: 5366}
     - Class: 114
-      Script: {instanceID: 6502}
+      Script: {instanceID: 5792}
     - Class: 114
-      Script: {instanceID: 6694}
+      Script: {instanceID: 6324}
     - Class: 114
-      Script: {instanceID: 6864}
+      Script: {instanceID: 6506}
     - Class: 114
-      Script: {instanceID: 6982}
+      Script: {instanceID: 6698}
     - Class: 114
-      Script: {instanceID: 7280}
+      Script: {instanceID: 6868}
     - Class: 114
-      Script: {instanceID: 7316}
+      Script: {instanceID: 6986}
     - Class: 114
-      Script: {instanceID: 7494}
+      Script: {instanceID: 7284}
     - Class: 114
-      Script: {instanceID: 7940}
+      Script: {instanceID: 7320}
     - Class: 114
-      Script: {instanceID: 7954}
+      Script: {instanceID: 7498}
     - Class: 114
-      Script: {instanceID: 8378}
+      Script: {instanceID: 7944}
     - Class: 114
-      Script: {instanceID: 9424}
+      Script: {instanceID: 7958}
     - Class: 114
-      Script: {instanceID: 10172}
+      Script: {instanceID: 8382}
+    - Class: 114
+      Script: {instanceID: 9428}
+    - Class: 114
+      Script: {instanceID: 10176}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -245,6 +328,61 @@ ScriptsOnlyBuild:
     - Class: 196
       Script: {instanceID: 0}
     - Class: 205
+      Script: {instanceID: 0}
+    - Class: 213
+      Script: {instanceID: 0}
+    - Class: 222
+      Script: {instanceID: 0}
+    - Class: 223
+      Script: {instanceID: 0}
+    - Class: 224
+      Script: {instanceID: 0}
+    Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity:
+    - Class: 1
+      Script: {instanceID: 0}
+    - Class: 4
+      Script: {instanceID: 0}
+    - Class: 20
+      Script: {instanceID: 0}
+    - Class: 21
+      Script: {instanceID: 0}
+    - Class: 28
+      Script: {instanceID: 0}
+    - Class: 48
+      Script: {instanceID: 0}
+    - Class: 81
+      Script: {instanceID: 0}
+    - Class: 89
+      Script: {instanceID: 0}
+    - Class: 104
+      Script: {instanceID: 0}
+    - Class: 108
+      Script: {instanceID: 0}
+    - Class: 114
+      Script: {instanceID: 1682}
+    - Class: 114
+      Script: {instanceID: 2634}
+    - Class: 114
+      Script: {instanceID: 3068}
+    - Class: 114
+      Script: {instanceID: 3344}
+    - Class: 114
+      Script: {instanceID: 3732}
+    - Class: 114
+      Script: {instanceID: 6506}
+    - Class: 114
+      Script: {instanceID: 7284}
+    - Class: 114
+      Script: {instanceID: 7498}
+    - Class: 114
+      Script: {instanceID: 7958}
+    - Class: 115
+      Script: {instanceID: 0}
+    - Class: 128
+      Script: {instanceID: 0}
+    - Class: 157
+      Script: {instanceID: 0}
+    - Class: 196
       Script: {instanceID: 0}
     - Class: 213
       Script: {instanceID: 0}
@@ -278,21 +416,21 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 1682}
     - Class: 114
-      Script: {instanceID: 3064}
+      Script: {instanceID: 2634}
     - Class: 114
-      Script: {instanceID: 3340}
+      Script: {instanceID: 3068}
     - Class: 114
-      Script: {instanceID: 3728}
+      Script: {instanceID: 3344}
     - Class: 114
-      Script: {instanceID: 6502}
+      Script: {instanceID: 3732}
     - Class: 114
-      Script: {instanceID: 7280}
+      Script: {instanceID: 6506}
     - Class: 114
-      Script: {instanceID: 7494}
+      Script: {instanceID: 7284}
     - Class: 114
-      Script: {instanceID: 7954}
+      Script: {instanceID: 7498}
     - Class: 114
-      Script: {instanceID: 29730}
+      Script: {instanceID: 7958}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -333,21 +471,29 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 1682}
     - Class: 114
-      Script: {instanceID: 3064}
+      Script: {instanceID: 1844}
     - Class: 114
-      Script: {instanceID: 3340}
+      Script: {instanceID: 2634}
     - Class: 114
-      Script: {instanceID: 3728}
+      Script: {instanceID: 3068}
     - Class: 114
-      Script: {instanceID: 6502}
+      Script: {instanceID: 3344}
     - Class: 114
-      Script: {instanceID: 7280}
+      Script: {instanceID: 3732}
     - Class: 114
-      Script: {instanceID: 7494}
+      Script: {instanceID: 5130}
     - Class: 114
-      Script: {instanceID: 7954}
+      Script: {instanceID: 6230}
     - Class: 114
-      Script: {instanceID: 29730}
+      Script: {instanceID: 6506}
+    - Class: 114
+      Script: {instanceID: 7284}
+    - Class: 114
+      Script: {instanceID: 7498}
+    - Class: 114
+      Script: {instanceID: 7958}
+    - Class: 114
+      Script: {instanceID: 48182}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -388,82 +534,21 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 1682}
     - Class: 114
-      Script: {instanceID: 3064}
+      Script: {instanceID: 2634}
     - Class: 114
-      Script: {instanceID: 3340}
+      Script: {instanceID: 3068}
     - Class: 114
-      Script: {instanceID: 3728}
+      Script: {instanceID: 3344}
     - Class: 114
-      Script: {instanceID: 6502}
+      Script: {instanceID: 3732}
     - Class: 114
-      Script: {instanceID: 7280}
+      Script: {instanceID: 6506}
     - Class: 114
-      Script: {instanceID: 7494}
+      Script: {instanceID: 7284}
     - Class: 114
-      Script: {instanceID: 7954}
+      Script: {instanceID: 7498}
     - Class: 114
-      Script: {instanceID: 29730}
-    - Class: 115
-      Script: {instanceID: 0}
-    - Class: 128
-      Script: {instanceID: 0}
-    - Class: 157
-      Script: {instanceID: 0}
-    - Class: 196
-      Script: {instanceID: 0}
-    - Class: 213
-      Script: {instanceID: 0}
-    - Class: 222
-      Script: {instanceID: 0}
-    - Class: 223
-      Script: {instanceID: 0}
-    - Class: 224
-      Script: {instanceID: 0}
-    Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity:
-    - Class: 1
-      Script: {instanceID: 0}
-    - Class: 4
-      Script: {instanceID: 0}
-    - Class: 20
-      Script: {instanceID: 0}
-    - Class: 21
-      Script: {instanceID: 0}
-    - Class: 28
-      Script: {instanceID: 0}
-    - Class: 48
-      Script: {instanceID: 0}
-    - Class: 81
-      Script: {instanceID: 0}
-    - Class: 89
-      Script: {instanceID: 0}
-    - Class: 104
-      Script: {instanceID: 0}
-    - Class: 108
-      Script: {instanceID: 0}
-    - Class: 114
-      Script: {instanceID: 1682}
-    - Class: 114
-      Script: {instanceID: 1844}
-    - Class: 114
-      Script: {instanceID: 3064}
-    - Class: 114
-      Script: {instanceID: 3340}
-    - Class: 114
-      Script: {instanceID: 3728}
-    - Class: 114
-      Script: {instanceID: 5126}
-    - Class: 114
-      Script: {instanceID: 6226}
-    - Class: 114
-      Script: {instanceID: 6502}
-    - Class: 114
-      Script: {instanceID: 7280}
-    - Class: 114
-      Script: {instanceID: 7494}
-    - Class: 114
-      Script: {instanceID: 7954}
-    - Class: 114
-      Script: {instanceID: 29730}
+      Script: {instanceID: 7958}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -508,29 +593,29 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 1682}
     - Class: 114
-      Script: {instanceID: 2478}
+      Script: {instanceID: 2480}
     - Class: 114
-      Script: {instanceID: 3064}
+      Script: {instanceID: 2634}
     - Class: 114
-      Script: {instanceID: 3340}
+      Script: {instanceID: 3068}
     - Class: 114
-      Script: {instanceID: 3728}
+      Script: {instanceID: 3344}
     - Class: 114
-      Script: {instanceID: 5000}
+      Script: {instanceID: 3732}
     - Class: 114
-      Script: {instanceID: 5146}
+      Script: {instanceID: 5004}
     - Class: 114
-      Script: {instanceID: 5506}
+      Script: {instanceID: 5150}
     - Class: 114
-      Script: {instanceID: 6502}
+      Script: {instanceID: 5510}
     - Class: 114
-      Script: {instanceID: 7280}
+      Script: {instanceID: 6506}
     - Class: 114
-      Script: {instanceID: 7494}
+      Script: {instanceID: 7284}
     - Class: 114
-      Script: {instanceID: 7954}
+      Script: {instanceID: 7498}
     - Class: 114
-      Script: {instanceID: 29730}
+      Script: {instanceID: 7958}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -664,6 +749,12 @@ ScriptsOnlyBuild:
     className: ARPointCloudMeshVisualizer
   - hash:
       serializedVersion: 2
+      Hash: 0e4547f48b89e0092a9afd3b41c386dd
+    assemblyName: UrSample
+    namespaceName: 
+    className: Cam
+  - hash:
+      serializedVersion: 2
       Hash: b12640dfdb5966813e9dd838893e6c4a
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
@@ -710,6 +801,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: UnityOnJointBreakMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: f0b6175111af36a78379bbae2eb7cc10
+    assemblyName: UrSample
+    namespaceName: 
+    className: buttons
   - hash:
       serializedVersion: 2
       Hash: 1ab136900c0edaeeb49424c852595030
@@ -1588,7 +1685,7 @@ ScriptsOnlyBuild:
     className: Text
   - hash:
       serializedVersion: 2
-      Hash: e9edda63825af0de157413d10644b258
+      Hash: 3d5bd982b1fcfd23aaa9cceaf0f1229f
     assemblyName: UrSample
     namespaceName: AukiHandTrackerSample
     className: HandCalibration
@@ -1696,7 +1793,7 @@ ScriptsOnlyBuild:
     className: UnityOnTriggerStay2DMessageListener
   - hash:
       serializedVersion: 2
-      Hash: cb8df8a015186be8e9a319df89929524
+      Hash: 50f50f96eea12eecdb67ca22c8f2f17e
     assemblyName: UrSample
     namespaceName: AukiHandTrackerSample
     className: Main
@@ -2206,10 +2303,10 @@ ScriptsOnlyBuild:
     className: UnityOnSliderValueChangedMessageListener
   - hash:
       serializedVersion: 2
-      Hash: f71371919c5e2306b71ec2058076f165
+      Hash: 6024a1e699d89e65b57fb491aaf1fe5b
     assemblyName: UrSample
     namespaceName: 
-    className: buttons
+    className: ReadInput
   platform: 9
   scenePathNames:
   - Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity
@@ -2217,5 +2314,5 @@ ScriptsOnlyBuild:
   - Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity
   - Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity
   - Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity
-  - Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity
+  - Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity
   playerPath: /Users/angelamei/Downloads/Pet

@@ -26,10 +26,13 @@ EditorBuildSettings:
     path: Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding
       3.unity
     guid: d0eaeb00f6370442682350ab6ecce913
-  - enabled: 1
+  - enabled: 0
     path: Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding
       4.unity
     guid: ae03aed6a9e094f3fadd02e89b67f7a7
+  - enabled: 1
+    path: Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity
+    guid: 2f92b006a3c6c4cd2a83cd3d8ac48342
   m_configObjects:
     UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: 606892f564ce14e60aa47266e70512bb, type: 2}
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: d00d439f6e5aa48dd8150df176f0cc15, type: 2}

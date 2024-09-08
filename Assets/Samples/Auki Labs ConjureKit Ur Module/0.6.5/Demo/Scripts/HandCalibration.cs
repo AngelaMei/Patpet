@@ -14,6 +14,8 @@ namespace AukiHandTrackerSample
         [SerializeField] private Text calibrationText;
         [SerializeField] private Button calibrationButton;
         [SerializeField] private Image calibrationStatusImage;
+        [SerializeField] private Button SpawnButton;
+        [SerializeField] private Image scan;
 
         private HandTracker _handTracker;
 
@@ -80,6 +82,12 @@ namespace AukiHandTrackerSample
                     {
                         calibrationButton.interactable = true;
                         calibrationText.text = "Calibrated";
+                        // Set UI elements inactive after successful calibration
+                        calibrationText.gameObject.SetActive(false);
+                        calibrationButton.gameObject.SetActive(false);
+                        calibrationStatusImage.gameObject.SetActive(false);
+                        SpawnButton.gameObject.SetActive(true);
+                        scan.gameObject.SetActive(true);
                         SaveCalibrationState();
                         break;
                     }

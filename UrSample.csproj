@@ -64,9 +64,11 @@
     <Analyzer Include="/Applications/Unity/Hub/Editor/2022.3.19f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scripts/Cam.cs" />
     <Compile Include="Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scripts/TouchableByHand.cs" />
     <Compile Include="Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scripts/buttons.cs" />
     <Compile Include="Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scripts/HandCalibration.cs" />
+    <Compile Include="Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scripts/ReadInput.cs" />
     <Compile Include="Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scripts/Main.cs" />
     <Compile Include="Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scripts/HandLandmark.cs" />
   </ItemGroup>

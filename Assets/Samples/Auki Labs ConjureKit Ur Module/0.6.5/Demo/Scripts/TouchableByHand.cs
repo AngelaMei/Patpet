@@ -12,11 +12,15 @@ namespace AukiHandTrackerSample
 
         private void Awake()
         {
+            Debug.Log("TouchableByHand script started!");
+            GameObject.Find("Main");
             mainScript = FindObjectOfType<Main>();
         }
 
         private void OnTriggerEnter(Collider other)
         {
+            Debug.Log("Collider Triggered!");
+            
             if (mainScript == null)
             {
                 mainScript = FindObjectOfType<Main>();

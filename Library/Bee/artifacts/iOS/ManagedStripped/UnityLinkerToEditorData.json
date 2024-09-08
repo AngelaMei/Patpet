@@ -20,10 +20,10 @@
             "name": "NavMeshSettings",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 1,
@@ -103,10 +103,10 @@
             "name": "AudioBehaviour",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -122,10 +122,10 @@
             "name": "AudioListener",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -176,10 +176,10 @@
             "name": "Camera",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -202,10 +202,10 @@
           {
             "name": "Cubemap",
             "scenes": [
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -227,10 +227,10 @@
             "name": "EditorExtension",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 1,
@@ -246,10 +246,10 @@
             "name": "GameObject",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -285,10 +285,10 @@
             "name": "LevelGameManager",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 1,
@@ -298,10 +298,10 @@
             "name": "Light",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -323,10 +323,10 @@
             "name": "LightmapSettings",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -348,10 +348,10 @@
             "name": "Material",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -385,10 +385,10 @@
             "name": "MonoBehaviour",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -404,10 +404,10 @@
             "name": "MonoScript",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 1,
@@ -417,10 +417,10 @@
             "name": "NamedObject",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 1,
@@ -454,10 +454,10 @@
             "name": "RectTransform",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -473,10 +473,10 @@
             "name": "RenderSettings",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -510,10 +510,10 @@
             "name": "Shader",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -543,10 +543,10 @@
             "name": "Sprite",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -1193,10 +1193,10 @@
             "name": "Font",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -1247,10 +1247,10 @@
             "name": "Canvas",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
@@ -1266,10 +1266,10 @@
             "name": "CanvasRenderer",
             "scenes": [
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/AR.unity",
+              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Auth.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 1.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 2.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 3.unity",
-              "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding 4.unity",
               "Assets/Samples/Auki Labs ConjureKit Ur Module/0.6.5/Demo/Scenes/Onboarding.unity"
             ],
             "dependencyType": 0,
